@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eldoret Homes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--forest:#123a31;--forest-2:#0d2b24;--stone:#eef0ea;--brass:#b8935a;--ink:#1d2622;--muted:#5f6b65;--white:#fff;
+    --serif:"Cormorant Garamond",Georgia,serif;--sans:"Hanken Grotesk",system-ui,sans-serif}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--stone);line-height:1.6}
+  a{color:inherit}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+  header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 16px;padding:22px 0}
+  .brand{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--white);text-decoration:none;letter-spacing:.02em}
+  nav{display:flex;flex-wrap:wrap;gap:4px 20px}
+  nav a{color:#d9e0da;text-decoration:none;font-size:15px}
+  nav a:hover{color:var(--brass)}
+  .hero{background:var(--forest);color:var(--white);padding-bottom:88px}
+  .hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(40px,8vw,72px);line-height:1.05;margin:56px 0 20px;max-width:14em}
+  .hero p{color:#c5d0c9;font-size:18px;max-width:34em;margin:0 0 36px}
+  .btn{display:inline-block;background:var(--brass);color:var(--forest-2);padding:15px 30px;border-radius:2px;font-weight:600;text-decoration:none;letter-spacing:.02em;border:0;font:inherit;font-weight:600;cursor:pointer}
+  .btn:hover{background:#c9a56c}
+  .ghost{margin-left:18px;color:#d9e0da;text-decoration:none;border-bottom:1px solid var(--brass);padding-bottom:2px}
+  section{padding:76px 0}
+  h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,5vw,44px);line-height:1.15;margin:0 0 16px}
+  .lead{color:var(--muted);max-width:40em;margin:0 0 8px}
+  .steps,.feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:36px;margin-top:36px}
+  .step,.feat{border-top:1px solid var(--brass);padding-top:18px}
+  .step b{font-family:var(--serif);font-size:30px;color:var(--brass);font-weight:500}
+  .step h3,.feat h3{margin:6px 0;font-size:18px}
+  .step p,.feat p{margin:0;color:var(--muted)}
+  .white{background:var(--white)}
+  .about{display:grid;grid-template-columns:1fr 1fr;gap:56px}
+  .about p{color:var(--muted);margin:0 0 14px}
+  .price{background:var(--forest);color:var(--white);padding:36px;border-radius:2px;align-self:start}
+  .price .amt{font-family:var(--serif);font-size:56px;line-height:1;color:var(--brass)}
+  .price p{color:#c5d0c9;margin:12px 0 24px}
+  /* area finder */
+  .finder{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0 8px}
+  select{flex:1;min-width:200px;padding:14px;font:inherit;border:1px solid #c8cec7;border-radius:2px;background:var(--white);color:var(--ink)}
+  .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:20px}
+  .area{background:var(--white);border:1px solid #dde2db;border-left:3px solid var(--brass);padding:16px 18px}
+  .area h3{margin:0;font-family:var(--serif);font-size:24px;font-weight:600}
+  .area .n{color:var(--muted);font-size:15px}
+  .area .n b{color:var(--forest);font-size:18px}
+  .area.none{border-left-color:#c8cec7}
+  .note{color:var(--muted);font-size:14px;margin-top:14px}
+  /* terms */
+  details{border-top:1px solid #dde2db;padding:16px 0}
+  details:last-of-type{border-bottom:1px solid #dde2db}
+  summary{cursor:pointer;font-weight:600;font-size:17px}
+  details p{color:var(--muted);margin:10px 0 0}
+  footer{background:var(--forest-2);color:#9fb0a7;padding:32px 0;font-size:14px}
+  footer a{color:#c5d0c9}
+  a:focus-visible,.btn:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+  @media(max-width:760px){.about{grid-template-columns:1fr;gap:32px}.ghost{display:block;margin:18px 0 0}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#">Eldoret Homes</a>
+      <nav>
+        <a href="#areas">Areas</a><a href="#about">About</a><a href="#security">Security</a><a href="#terms">Terms</a><a href="login.html">Enter code</a>
+      </nav>
+    </header>
+    <h1>Find a home in Eldoret, without the guesswork.</h1>
+    <p>Browse available houses and apartments across Eldoret and its surroundings, all listed in one place.</p>
+    <a class="btn" href="#areas">Check availability by area</a>
+    <a class="ghost" href="login.html">I already have a code</a>
+  </div>
+</div>
+
+<section id="areas">
+  <div class="wrap">
+    <h2>Check availability by area</h2>
+    <p class="lead">Pick an area to see how many apartments are available there right now.</p>
+    <div class="finder">
+      <select id="areaSelect" aria-label="Choose an area"></select>
+    </div>
+    <div class="results" id="results"></div>
+    <p class="note">Counts are free to view. Prices, photos, and exact locations unlock with your access code.</p>
+  </div>
+</section>
+
+<section class="white" id="about">
+  <div class="wrap about">
+    <div>
+      <h2>About Eldoret Homes</h2>
+      <p>We help people find a place to live in Eldoret and its environs, without chasing agents or visiting units that are already taken.</p>
+      <p>Every unit on this site is posted directly by us, so what you see is what is actually available. When a unit is taken, it comes down.</p>
+      <p>Browsing costs one flat fee, and you will always know what you are paying for before you pay.</p>
+    </div>
+    <div class="price" id="access">
+      <div class="amt">KES 800</div>
+      <p>Three days of full access to all available units.</p>
+      <a class="btn" href="#">Pay with M-Pesa</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step"><b>1</b><h3>Pay once</h3><p>Pay KES 800 by M-Pesa from your phone.</p></div>
+      <div class="step"><b>2</b><h3>Get your code</h3><p>A 6-digit access code arrives by SMS and WhatsApp.</p></div>
+      <div class="step"><b>3</b><h3>Browse for 3 days</h3><p>See every available unit, with details and photos.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="white" id="security">
+  <div class="wrap">
+    <h2>Built to keep you safe</h2>
+    <p class="lead">Your access and your payment are protected at every step.</p>
+    <div class="feats">
+      <div class="feat"><h3>Code locked to your phone</h3><p>Your access code only works with the number that paid, so it cannot be shared or resold.</p></div>
+      <div class="feat"><h3>Expires after 3 days</h3><p>Access ends automatically, and your code stops working.</p></div>
+      <div class="feat"><h3>Payment through M-Pesa</h3><p>You approve every payment on your own phone. We never see or store your PIN.</p></div>
+      <div class="feat"><h3>Verified listings only</h3><p>Only the site admin can post or remove units, so there are no anonymous or duplicate listings.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="terms">
+  <div class="wrap">
+    <h2>Terms and conditions</h2>
+    <p class="lead">Please read these before paying. Edit the wording to match your business.</p>
+    <div style="margin-top:28px">
+      <details><summary>1. What you are paying for</summary><p>The KES 800 fee gives you access to view the list of available units for 3 days. It is a viewing fee and does not reserve any unit or pay any rent or deposit.</p></details>
+      <details><summary>2. Access code</summary><p>Your code is tied to the phone number used to pay and cannot be transferred. Access ends 3 days after payment.</p></details>
+      <details><summary>3. Refunds</summary><p>The fee is non-refundable once your code has been issued, except where a payment was taken but no code was delivered. Contact us within 24 hours in that case.</p></details>
+      <details><summary>4. Availability</summary><p>Units are updated regularly, but a unit may be taken before you view it. We do not guarantee that any unit will still be available.</p></details>
+      <details><summary>5. Viewings and agreements</summary><p>Any rent, deposit, or tenancy agreement is made directly between you and the landlord. Never pay rent or deposits before viewing a unit and signing an agreement.</p></details>
+      <details><summary>6. Acceptable use</summary><p>Do not copy, resell, or republish our listings, photos, or access codes. We may cancel access for misuse without refund.</p></details>
+      <details><summary>7. Your data</summary><p>We use your phone number only to process payment, issue your code, and send you notifications. We do not sell it.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">© Eldoret Homes. All rights reserved. · <a href="#terms">Terms</a> · <a href="#security">Security</a></div>
+</footer>
+
+<script>
+// Edit this list. Later this can come from Supabase (count of available units per area).
+const AREAS = [
+  { name: "Elgon View", available: 4 },
+  { name: "Kapsoya", available: 7 },
+  { name: "Langas", available: 3 },
+  { name: "Pioneer", available: 2 },
+  { name: "Kimumu", available: 5 },
+  { name: "Huruma", available: 0 },
+  { name: "Annex", available: 3 },
+  { name: "Maili Nne", available: 6 },
+  { name: "Kapseret", available: 4 }
+];
+const sel = document.getElementById('areaSelect');
+const out = document.getElementById('results');
+sel.innerHTML = '<option value="all">All areas</option>' + AREAS.map(a => `<option>${a.name}</option>`).join('');
+
+function card(a) {
+  const text = a.available > 0
+    ? `<span class="n"><b>${a.available}</b> available</span>`
+    : `<span class="n">None right now</span>`;
+  return `<div class="area ${a.available ? '' : 'none'}"><h3>${a.name}</h3>${text}</div>`;
+}
+function render() {
+  const list = sel.value === 'all' ? AREAS : AREAS.filter(a => a.name === sel.value);
+  out.innerHTML = list.map(card).join('');
+}
+sel.addEventListener('change', render);
+render();
+</script>
+</body>
+</html>

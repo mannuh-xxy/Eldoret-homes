@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin · Eldoret Homes</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--forest:#123a31;--brass:#b8935a;--stone:#eef0ea;--ink:#1d2622;--muted:#5f6b65}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--stone);color:var(--ink)}
+  .wrap{max-width:760px;margin:0 auto;padding:20px}
+  header{background:var(--forest);color:#fff}
+  header .wrap{display:flex;justify-content:space-between;align-items:center}
+  h1{font-size:20px;margin:0}h2{font-size:18px;margin:0 0 14px}
+  .card{background:#fff;border:1px solid #dde2db;border-radius:4px;padding:20px;margin-bottom:20px}
+  label{display:block;font-size:14px;font-weight:600;margin:12px 0 4px}
+  input,select,textarea{width:100%;padding:11px;font:inherit;border:1px solid #c8cec7;border-radius:3px;background:#fff}
+  textarea{min-height:90px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  button{font:inherit;font-weight:600;padding:12px 20px;border:0;border-radius:3px;background:var(--forest);color:#fff;cursor:pointer;margin-top:16px}
+  button.alt{background:#fff;color:var(--forest);border:1px solid var(--forest);padding:7px 12px;margin:0;font-size:14px}
+  button.del{color:#b3261e;border-color:#b3261e}
+  button:disabled{opacity:.5}
+  .msg{margin-top:12px;font-size:14px;min-height:18px}.err{color:#b3261e}.ok{color:#1b7a43}
+  .unit{display:flex;gap:12px;align-items:center;border-top:1px solid #e6eae4;padding:12px 0}
+  .unit img{width:64px;height:64px;object-fit:cover;border-radius:3px;background:#ddd}
+  .info{flex:1;min-width:0}.info b{display:block}.info span{color:var(--muted);font-size:14px}
+  .tag{font-size:12px;padding:2px 8px;border-radius:10px;background:#d8efe0;color:#1b7a43}.tag.taken{background:#eee;color:#666}
+  .btns{display:flex;flex-direction:column;gap:6px}
+  .hide{display:none}
+  @media(max-width:520px){.row{grid-template-columns:1fr}}
+  a{color:var(--forest)}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>Eldoret Homes · Admin</h1><button class="alt hide" id="logout">Log out</button></div></header>
+<div class="wrap">
+
+  <div class="card" id="loginCard">
+    <h2>Admin login</h2>
+    <label>Email</label><input id="email" type="email" autocomplete="username">
+    <label>Password</label><input id="password" type="password" autocomplete="current-password">
+    <button id="loginBtn">Log in</button>
+    <p class="msg" id="loginMsg"></p>
+    <p><a href="#" id="forgotLink">Forgot password?</a></p>
+  </div>
+
+  <div class="card hide" id="resetCard">
+    <h2>Reset your password</h2>
+    <p>Enter your admin email and we will send you a reset link.</p>
+    <label>Email</label><input id="resetEmail" type="email" autocomplete="username">
+    <button id="resetBtn">Send reset link</button>
+    <p class="msg" id="resetMsg"></p>
+    <p><a href="#" id="backLink">Back to login</a></p>
+  </div>
+
+  <div class="card hide" id="newCard">
+    <h2>Set a new password</h2>
+    <label>New password</label><input id="newPass" type="password" autocomplete="new-password" minlength="8">
+    <label>Confirm password</label><input id="newPass2" type="password" autocomplete="new-password">
+    <button id="newBtn">Save new password</button>
+    <p class="msg" id="newMsg"></p>
+  </div>
+
+  <div class="hide" id="app">
+    <div class="card">
+      <h2>Post a unit</h2>
+      <label>Title</label><input id="title" placeholder="e.g. 2-bedroom apartment, Kapsoya">
+      <div class="row">
+        <div><label>Area</label><select id="area"></select></div>
+        <div><label>Monthly rent (KES)</label><input id="rent" type="number" min="0" inputmode="numeric"></div>
+      </div>
+      <div class="row">
+        <div><label>Type</label>
+          <select id="bedrooms"><option>Bedsitter</option><option>Single room</option><option>1 bedroom</option><option>2 bedroom</option><option>3 bedroom</option><option>4+ bedroom</option></select></div>
+        <div><label>Status</label><select id="status"><option value="available">Available</option><option value="taken">Taken</option></select></div>
+      </div>
+      <label>Description</label><textarea id="description" placeholder="Water, parking, security, deposit, nearby amenities..."></textarea>
+      <label>Photos</label><input id="photos" type="file" accept="image/*" multiple>
+      <button id="postBtn">Post unit</button>
+      <p class="msg" id="postMsg"></p>
+    </div>
+
+    <div class="card">
+      <h2>Your units</h2>
+      <div id="list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 1) Paste your Supabase Project URL and the "anon" public key (Project Settings > API).
+//    Never put the service_role key here.
+const SUPABASE_URL = "https://xuhpctixsooijzkklyfg.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aHBjdGl4c29vaWp6a2tseWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMjI5NjksImV4cCI6MjEwMzU5ODk2OX0.u8h6sR306IdTO5KdOGmfGqM8ABpyJ9uw50O9KMYD7lQ";
+const AREAS = ["Elgon View","Kapsoya","Langas","Pioneer","Kimumu","Huruma","Annex","Maili Nne","Kapseret"]; // keep same as homepage
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+$('area').innerHTML = AREAS.map(a => `<option>${a}</option>`).join('');
+const say = (el, t, c) => { el.textContent = t; el.className = 'msg ' + (c || ''); };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const VIEWS = ['loginCard','resetCard','newCard','app'];
+let recovering = location.hash.includes('type=recovery');
+function showView(name) {
+  VIEWS.forEach(v => $(v).classList.toggle('hide', v !== name));
+  $('logout').classList.toggle('hide', name !== 'app');
+  if (name === 'app') loadUnits();
+}
+function showApp(session) { showView(session && !recovering ? 'app' : (recovering ? 'newCard' : 'loginCard')); }
+
+db.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY') { recovering = true; showView('newCard'); } });
+db.auth.getSession().then(({ data }) => showApp(data.session));
+
+$('forgotLink').onclick = e => { e.preventDefault(); $('resetEmail').value = $('email').value; say($('resetMsg'), ''); showView('resetCard'); };
+$('backLink').onclick = e => { e.preventDefault(); showView('loginCard'); };
+
+$('resetBtn').onclick = async () => {
+  const email = $('resetEmail').value.trim();
+  if (!email) return say($('resetMsg'), 'Enter your email.', 'err');
+  $('resetBtn').disabled = true; say($('resetMsg'), 'Sending...');
+  const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+  $('resetBtn').disabled = false;
+  if (error) return say($('resetMsg'), 'Could not send the email. Wait a minute and try again.', 'err');
+  say($('resetMsg'), 'If that email has an account, a reset link is on its way. Check your inbox and spam.', 'ok');
+};
+
+$('newBtn').onclick = async () => {
+  const a = $('newPass').value, b = $('newPass2').value;
+  if (a.length < 8) return say($('newMsg'), 'Use at least 8 characters.', 'err');
+  if (a !== b) return say($('newMsg'), 'The two passwords do not match.', 'err');
+  const { error } = await db.auth.updateUser({ password: a });
+  if (error) return say($('newMsg'), 'Could not save: ' + error.message, 'err');
+  recovering = false;
+  history.replaceState(null, '', location.pathname);
+  await db.auth.signOut();
+  say($('loginMsg'), 'Password updated. Log in with your new password.', 'ok');
+  showView('loginCard');
+};
+
+$('loginBtn').onclick = async () => {
+  say($('loginMsg'), 'Logging in...');
+  const { error } = await db.auth.signInWithPassword({ email: $('email').value.trim(), password: $('password').value });
+  if (error) return say($('loginMsg'), 'Wrong email or password.', 'err');
+  say($('loginMsg'), '');
+  showView('app');
+};
+$('logout').onclick = async () => { await db.auth.signOut(); showView('loginCard'); };
+
+$('postBtn').onclick = async () => {
+  const title = $('title').value.trim(), rent = parseInt($('rent').value, 10);
+  if (!title || !rent) return say($('postMsg'), 'Add a title and the monthly rent.', 'err');
+  $('postBtn').disabled = true; say($('postMsg'), 'Posting...');
+  try {
+    const { data: unit, error } = await db.from('units').insert({
+      title, rent, area: $('area').value, bedrooms: $('bedrooms').value,
+      status: $('status').value, description: $('description').value.trim()
+    }).select().single();
+    if (error) throw error;
+
+    const paths = [];
+    for (const f of $('photos').files) {
+      const path = `${unit.id}/${Date.now()}-${f.name.replace(/[^\w.\-]/g, '_')}`;
+      const { error: upErr } = await db.storage.from('unit-photos').upload(path, f);
+      if (upErr) throw upErr;
+      paths.push(path);
+    }
+    if (paths.length) {
+      const { error: e2 } = await db.from('units').update({ photos: paths }).eq('id', unit.id);
+      if (e2) throw e2;
+    }
+    ['title','rent','description','photos'].forEach(id => $(id).value = '');
+    say($('postMsg'), 'Unit posted.', 'ok');
+    loadUnits();
+  } catch (e) {
+    say($('postMsg'), 'Could not post: ' + (e.message || 'unknown error'), 'err');
+  } finally { $('postBtn').disabled = false; }
+};
+
+async function loadUnits() {
+  const { data, error } = await db.from('units').select('*').order('created_at', { ascending: false });
+  if (error) return $('list').innerHTML = '<p class="err">Could not load units.</p>';
+  if (!data.length) return $('list').innerHTML = '<p>No units yet. Post your first one above.</p>';
+
+  const firstPhotos = data.map(u => u.photos?.[0]).filter(Boolean);
+  const urls = {};
+  if (firstPhotos.length) {
+    const { data: signed } = await db.storage.from('unit-photos').createSignedUrls(firstPhotos, 3600);
+    (signed || []).forEach(s => { urls[s.path] = s.signedUrl; });
+  }
+  $('list').innerHTML = data.map(u => `
+    <div class="unit">
+      <img src="${urls[u.photos?.[0]] || ''}" alt="">
+      <div class="info"><b>${esc(u.title)}</b>
+        <span>${esc(u.area)} · ${esc(u.bedrooms)} · KES ${Number(u.rent).toLocaleString()}</span>
+        <span class="tag ${u.status}">${u.status}</span></div>
+      <div class="btns">
+        <button class="alt" data-toggle="${u.id}" data-status="${u.status}">Mark ${u.status === 'available' ? 'taken' : 'available'}</button>
+        <button class="alt del" data-del="${u.id}">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+$('list').onclick = async e => {
+  const t = e.target;
+  if (t.dataset.toggle) {
+    await db.from('units').update({ status: t.dataset.status === 'available' ? 'taken' : 'available' }).eq('id', t.dataset.toggle);
+    loadUnits();
+  } else if (t.dataset.del && confirm('Delete this unit and its photos?')) {
+    const { data: files } = await db.storage.from('unit-photos').list(t.dataset.del);
+    if (files?.length) await db.storage.from('unit-photos').remove(files.map(f => `${t.dataset.del}/${f.name}`));
+    await db.from('units').delete().eq('id', t.dataset.del);
+    loadUnits();
+  }
+};
+</script>
+</body>
+</html>
