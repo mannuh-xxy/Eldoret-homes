@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enter Access Code · Eldoret Homes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--forest:#123a31;--deep:#0b241e;--brass:#b8935a;--brass-2:#d3b27a;--text:#f1f3ee;--muted:#a9b7af;--field:rgba(255,255,255,.06);
+    --serif:"Cormorant Garamond",Georgia,serif;--sans:"Hanken Grotesk",system-ui,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;font-family:var(--sans);color:var(--text);
+    background:var(--deep);overflow-x:hidden;position:relative}
+  /* slow drifting glow behind the card */
+  body::before,body::after{content:"";position:fixed;width:60vmax;height:60vmax;border-radius:50%;filter:blur(90px);opacity:.35;z-index:0;pointer-events:none}
+  body::before{background:var(--forest);top:-20vmax;left:-15vmax;animation:drift 18s ease-in-out infinite alternate}
+  body::after{background:#6d5530;bottom:-28vmax;right:-20vmax;opacity:.22;animation:drift 22s ease-in-out infinite alternate-reverse}
+  @keyframes drift{to{transform:translate(8vmax,6vmax) scale(1.1)}}
+
+  .back{position:fixed;top:18px;left:20px;z-index:2;color:var(--muted);text-decoration:none;font-size:14px}
+  .back:hover{color:var(--brass-2)}
+
+  .card{position:relative;z-index:1;width:100%;max-width:410px;padding:38px 26px 28px;text-align:center;
+    background:rgba(18,58,49,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-radius:14px;animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+  /* brass border that draws itself in */
+  .card::before{content:"";position:absolute;inset:0;border-radius:14px;padding:1.5px;
+    background:conic-gradient(from 0deg,var(--brass),transparent 40%,var(--brass-2) 70%,var(--brass));
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+    animation:spin 8s linear infinite;pointer-events:none}
+  @property --a{syntax:"<angle>";initial-value:0deg;inherits:false}
+  @keyframes spin{to{filter:hue-rotate(0deg);transform:rotate(0)}}
+
+  .lock{width:62px;height:62px;margin:0 auto 14px;display:block;overflow:visible}
+  .lock .shackle{transform-origin:50% 100%;transition:transform .6s cubic-bezier(.3,1.4,.5,1)}
+  .lock.open .shackle{transform:translateY(-7px) rotate(-18deg)}
+  .lock.pulse{animation:pulse 3.2s ease-in-out infinite}
+  @keyframes pulse{50%{filter:drop-shadow(0 0 10px rgba(211,178,122,.55))}}
+
+  h1{font-family:var(--serif);font-weight:500;font-size:34px;line-height:1.1;margin:0 0 10px}
+  .description{color:var(--muted);font-size:15px;line-height:1.55;margin:0 0 22px}
+
+  .phone-field{width:100%;padding:14px;border-radius:9px;border:1.5px solid rgba(255,255,255,.14);background:var(--field);
+    color:var(--text);font:inherit;font-size:16px;text-align:center;margin-bottom:18px;transition:border-color .2s,box-shadow .2s}
+  .phone-field::placeholder{color:#7f9088}
+  .otp-inputs{display:flex;gap:8px;justify-content:center;margin-bottom:22px}
+  .otp-input{width:46px;height:58px;border-radius:9px;border:1.5px solid rgba(255,255,255,.14);background:var(--field);color:var(--text);
+    font-family:var(--serif);font-size:30px;font-weight:600;text-align:center;caret-color:var(--brass-2);
+    transition:border-color .2s,box-shadow .2s,transform .2s,background .2s}
+  .otp-input:focus,.phone-field:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 3px rgba(184,147,90,.25)}
+  .otp-input:focus{transform:translateY(-3px)}
+  .otp-input.filled{border-color:var(--brass);background:rgba(184,147,90,.12);animation:pop .22s ease}
+  @keyframes pop{50%{transform:scale(1.1)}}
+
+  .verify-btn{position:relative;width:100%;padding:15px;border:0;border-radius:9px;background:var(--brass);color:#1a1307;font:inherit;
+    font-size:16px;font-weight:600;letter-spacing:.05em;cursor:pointer;overflow:hidden;transition:transform .15s,background .2s}
+  .verify-btn:hover{background:var(--brass-2)}
+  .verify-btn:active{transform:scale(.98)}
+  .verify-btn:disabled{opacity:.6;cursor:wait}
+  .verify-btn.loading::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);
+    animation:sheen 1s linear infinite}
+  @keyframes sheen{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+  .msg{min-height:22px;margin:14px 0 0;font-size:14px}
+  .msg.error{color:#ff9b8c}.msg.ok{color:#8fe0a8}
+  .shake{animation:shake .45s}
+  @keyframes shake{20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+  .otp-inputs.bad .otp-input{border-color:#ff9b8c}
+
+  .hint{margin:16px 0 0;color:var(--muted);font-size:13.5px}
+  .hint a{color:var(--brass-2);text-decoration:none;border-bottom:1px solid rgba(211,178,122,.5)}
+  .secure{margin-top:18px;font-size:12.5px;color:#7f9088}
+  .card > *{animation:fade .6s ease both}
+  .card > *:nth-child(2){animation-delay:.12s}.card > *:nth-child(3){animation-delay:.18s}.card > *:nth-child(4){animation-delay:.24s}
+  .card > *:nth-child(5){animation-delay:.3s}.card > *:nth-child(6){animation-delay:.36s}.card > *:nth-child(n+7){animation-delay:.42s}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  a:focus-visible,button:focus-visible{outline:2px solid var(--brass-2);outline-offset:3px}
+  @media(max-width:380px){.otp-input{width:40px;height:52px;font-size:26px}h1{font-size:30px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← Back to home</a>
+
+<main class="card" id="card">
+  <svg class="lock pulse" id="lock" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+    <path class="shackle" d="M20 28V20a12 12 0 0 1 24 0v8" stroke="#d3b27a" stroke-width="4.5" stroke-linecap="round"/>
+    <rect x="12" y="28" width="40" height="28" rx="6" fill="#b8935a"/>
+    <circle cx="32" cy="40" r="4" fill="#123a31"/><rect x="30.5" y="42" width="3" height="8" rx="1.5" fill="#123a31"/>
+  </svg>
+  <h1>Enter your access code</h1>
+  <p class="description">Use the phone number you paid with and the 6-digit code we sent you by SMS or WhatsApp.</p>
+  <input class="phone-field" id="phone" type="tel" inputmode="tel" placeholder="07XX XXX XXX" autocomplete="tel" aria-label="Phone number">
+  <div class="otp-inputs" id="otpInputs" role="group" aria-label="6-digit access code">
+    <input class="otp-input" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1">
+    <input class="otp-input" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 2">
+    <input class="otp-input" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 3">
+    <input class="otp-input" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 4">
+    <input class="otp-input" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 5">
+    <input class="otp-input" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 6">
+  </div>
+  <button class="verify-btn" id="verifyBtn">VERIFY CODE</button>
+  <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  <p class="hint">No code yet? <a href="index.html#access">Get access for KES 800</a></p>
+  <p class="secure">🔒 Your code works only with your phone number and expires after 3 days.</p>
+</main>
+
+<script>
+const card = document.getElementById('card');
+const lock = document.getElementById('lock');
+const wrap = document.getElementById('otpInputs');
+const boxes = [...document.querySelectorAll('.otp-input')];
+const btn = document.getElementById('verifyBtn');
+const msg = document.getElementById('msg');
+const phone = document.getElementById('phone');
+
+boxes.forEach((box, i) => {
+  box.addEventListener('input', () => {
+    box.value = box.value.replace(/\D/g, '').slice(0, 1);
+    box.classList.toggle('filled', !!box.value);
+    wrap.classList.remove('bad');
+    if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+    if (boxes.every(b => b.value) && phone.value.trim()) verify();
+  });
+  box.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
+    if (e.key === 'Enter') verify();
+  });
+  box.addEventListener('paste', e => {
+    e.preventDefault();
+    const d = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+    d.split('').forEach((c, k) => { boxes[k].value = c; boxes[k].classList.add('filled'); });
+    boxes[Math.min(d.length, 5)].focus();
+  });
+});
+
+function say(t, type) { msg.textContent = t; msg.className = 'msg ' + (type || ''); }
+function fail(t) {
+  say(t, 'error');
+  wrap.classList.add('bad');
+  card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+}
+
+async function verify() {
+  if (btn.disabled) return;
+  const num = phone.value.trim();
+  const code = boxes.map(b => b.value).join('');
+  if (!num) { phone.focus(); return fail('Enter your phone number.'); }
+  if (code.length < 6) return fail('Enter all 6 digits of your code.');
+
+  btn.disabled = true; btn.classList.add('loading'); say('Checking your code...');
+  try {
+    // TODO: connect your code check here. On success, run unlock() and open the units page.
+    await new Promise(r => setTimeout(r, 700));
+    throw new Error('not connected');
+  } catch (err) {
+    fail('That code is wrong or has expired. Check the number and try again.');
+  } finally {
+    btn.disabled = false; btn.classList.remove('loading');
+  }
+}
+function unlock() {            // call this when a code is valid
+  lock.classList.remove('pulse'); lock.classList.add('open');
+  say('Access granted. Opening available units...', 'ok');
+}
+btn.addEventListener('click', verify);
+</script>
+</body>
+</html>
